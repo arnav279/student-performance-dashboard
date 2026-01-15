@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <style>
+        :root {
+            --bg: #081022;
+            --bg-soft: #101a39;
+            --panel: rgba(12, 19, 44, 0.86);
+            --panel-soft: rgba(255, 255, 255, 0.05);
+            --line: rgba(255, 255, 255, 0.14);
+            --ink: #f5f7ff;
+            --muted: #b2bfdc;
+            --cyan: #20d9ff;
+            --teal: #1de9b6;
+            --gold: #ffcf4d;
+            --coral: #ff6b81;
+            --violet: #8d7dff;
+            --shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(32, 217, 255, 0.18), transparent 26%),
+                radial-gradient(circle at top right, rgba(141, 125, 255, 0.18), transparent 24%),
+                radial-gradient(circle at 50% 100%, rgba(255, 107, 129, 0.12), transparent 30%),
+                linear-gradient(180deg, #0a0f24 0%, #111736 42%, #081022 100%);
+        }
+        .shell { max-width: 1440px; margin: 0 auto; padding: 26px 18px 54px; }
+        .hero, .panel {
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: var(--panel);
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+        }
+        .hero {
+            display: grid;
+            grid-template-columns: 1.35fr 0.65fr;
+            gap: 22px;
+            padding: 28px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(29, 233, 182, 0.16), transparent 26%),
+                radial-gradient(circle at 20% 10%, rgba(255, 207, 77, 0.1), transparent 18%),
+                linear-gradient(135deg, rgba(21, 34, 78, 0.98), rgba(8, 16, 34, 0.96));
+        }
+        .eyebrow {
+            display: inline-flex;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--cyan);
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+        h1 {
+            margin: 16px 0 14px;
+            font-size: clamp(2.5rem, 5vw, 4.9rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+        }
+        h2, h3 { margin: 0; letter-spacing: -0.02em; }
+        p { margin: 0; }
+        .lead, .muted { color: #cbdbf8; line-height: 1.8; }
+        .muted { color: var(--muted); }
+        .hero-actions, .stack { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+        .chip, .stack span {
+            display: inline-flex;
+            align-items: center;
+            padding: 11px 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--ink);
+            text-decoration: none;
+        }
+        .hero-side { display: grid; gap: 14px; }
+        .glass {
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .hero-stat strong { display: block; font-size: 2.8rem; line-height: 1; margin: 8px 0; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .panel { padding: 22px; }
+        .metric-card .label {
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.76rem;
+        }
+        .metric-card .value {
+            margin: 10px 0 8px;
+            font-size: 2.15rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+        }
+        .workspace {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr);
+            gap: 18px;
+            margin-top: 18px;
+        }
+        .filter-panel {
+            background:
+                linear-gradient(180deg, rgba(255, 207, 77, 0.1), transparent 18%),
+                linear-gradient(160deg, rgba(32, 217, 255, 0.12), rgba(12, 19, 44, 0.92));
+        }
+        .filter-banner {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255, 107, 129, 0.2), rgba(141, 125, 255, 0.18));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 16px;
+        }
+        .controls { display: grid; gap: 14px; }
+        .control-group {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(7, 14, 30, 0.38);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .control-group h3 {
+            font-size: 0.95rem;
+            color: #ffffff;
+        }
+        .field { display: grid; gap: 8px; }
+        .field label { font-size: 0.92rem; color: #d8e5ff; }
+        .field input, .field select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(20, 31, 66, 0.98), rgba(11, 18, 40, 0.98));
+            color: #f8fbff;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        .field select {
+            box-shadow: inset 0 0 0 1px rgba(32, 217, 255, 0.08);
+        }
+        .field select:focus,
+        .field input:focus {
+            outline: 2px solid rgba(32, 217, 255, 0.35);
+            outline-offset: 2px;
+            border-color: rgba(32, 217, 255, 0.5);
+        }
+        .field select option {
+            background: #101a39;
+            color: #f5f7ff;
+        }
+        .toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .toggle input { width: 18px; height: 18px; accent-color: var(--teal); }
+        .mini-grid, .spotlight-grid, .insight-grid, .footer-grid, .lab-grid {
+            display: grid;
+            gap: 14px;
+        }
+        .profile-grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 18px;
+        }
+        .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 18px; }
+        .mini-card, .item {
+            padding: 15px 16px;
+            border-radius: 18px;
+            background: var(--panel-soft);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .mini-card strong { display: block; margin-top: 8px; font-size: 1.45rem; }
+        .student-list { display: grid; gap: 10px; margin-top: 18px; max-height: 540px; overflow: auto; }
+        .student-card {
+            width: 100%;
+            padding: 14px 15px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--ink);
+            text-align: left;
+            cursor: pointer;
+            transition: 180ms ease;
+        }
+        .student-card:hover, .student-card.active {
+            transform: translateY(-2px);
+            background: rgba(99, 230, 255, 0.08);
+            border-color: rgba(99, 230, 255, 0.42);
+        }
+        .student-head {
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr 0.8fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .table-head, .table-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr 0.7fr 0.7fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .main { display: grid; gap: 18px; }
+        .spotlight {
+            display: grid;
+            grid-template-columns: 1.1fr 340px;
+            gap: 18px;
+        }
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(66, 217, 182, 0.14);
