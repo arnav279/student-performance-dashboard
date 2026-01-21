@@ -42,3 +42,119 @@ The major objectives of the project are:
 
 - to create an interactive dashboard for student performance assessment
 - to represent student data across academic, demographic, and behavioral dimensions
+- to visualize student trends using modern chart-based techniques
+- to identify support-risk learners using academic and attendance criteria
+- to generate readable insight summaries for intervention planning
+- to provide a strong capstone-style demonstration project for academic evaluation
+
+## 6. Scope of the Project
+
+The scope of the project includes:
+
+- analysis of academic scores across five major subjects
+- attendance-based performance monitoring
+- student segmentation using multiple filters
+- individual student spotlight review
+- support recommendations and risk awareness
+- cohort comparison and summary visualization
+- export-ready data representation for external reporting tools
+
+The project is suitable for:
+
+- educational analytics demonstrations
+- minor project and capstone presentations
+- dashboard design showcases
+- academic data visualization use cases
+- early-stage student monitoring systems
+
+## 7. Key Features
+
+### 7.1 Interactive Cohort Explorer
+
+The cohort explorer is one of the main components of the dashboard. It allows users to filter and narrow down the student population dynamically. This helps in studying specific learner groups rather than only the full dataset.
+
+The explorer currently supports filtering by:
+
+- student name
+- school
+- department
+- grade level
+- region
+- gender
+- socioeconomic status
+- internet access
+- attendance threshold
+- support-risk category
+- sorting preference
+
+This feature makes the dashboard highly interactive and useful for detailed student segmentation.
+
+### 7.2 Student Spotlight Panel
+
+The student spotlight panel provides a focused view of an individual learner. When a student is selected, the dashboard updates to show:
+
+- average score
+- attendance status
+- strongest subject
+- weakest subject
+- student narrative summary
+- intervention recommendation
+- attendance outlook
+- support priority level
+
+This feature helps transform raw student values into a meaningful learner profile.
+
+### 7.3 Multi-Subject Academic Analysis
+
+The dashboard analyzes student performance across the following five assessment domains:
+
+- Mathematics
+- Science
+- English
+- Computer Science
+- Economics
+
+Using multiple subject areas makes the project more realistic and more useful than a three-subject classroom demo. It also supports better subject comparison and broader academic evaluation.
+
+### 7.4 Rich Student Data Representation
+
+The project goes beyond marks and attendance to represent broader student context. Each student record includes fields such as:
+
+- Student ID
+- student name
+- gender
+- age
+- grade level
+- school
+- department
+- region
+- socioeconomic status
+- parental education
+- study hours per week
+- attendance
+- behavior score
+- extracurricular score
+- internet access
+- career goal
+- subject scores
+- overall average
+
+This richer dataset helps make the project look and function like a more mature educational analytics system.
+
+### 7.5 Performance and Risk Visualization
+
+The dashboard includes visualizations that support both overview and detailed analysis. These charts help users understand:
+
+- how subject scores compare across learners
+- how attendance relates to academic performance
+- how a filtered cohort performs across subjects
+- which students fall into possible intervention zones
+
+These visual components make the dashboard suitable for both presentation and analysis.
+
+### 7.6 Academic Support Recommendations
+
+The system includes recommendation-style insight generation that identifies:
+
+- students with low academic averages
+- students with low attendance
