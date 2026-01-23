@@ -158,3 +158,98 @@ The system includes recommendation-style insight generation that identifies:
 
 - students with low academic averages
 - students with low attendance
+- subject areas where intervention is needed
+- learners who should be prioritized for support
+
+This gives the project an intelligence-oriented dimension and improves its usefulness as a decision-support tool.
+
+## 8. Dataset Description
+
+The project uses a dataset of **100 unique students**. The dataset has been expanded specifically to make the project stronger in scope, realism, and analytical value.
+
+### 8.1 Dataset Characteristics
+
+- 100 student records
+- all student names are unique
+- Urban and Rural regional categories
+- multiple schools represented
+- multiple departments represented
+- multiple grade levels represented
+- multiple socioeconomic categories represented
+- multiple learner-support indicators represented
+
+### 8.2 Main Data Groups
+
+The dataset can be broadly divided into the following groups:
+
+#### Academic Fields
+
+- Math
+- Science
+- English
+- ComputerScience
+- Economics
+- Average
+
+#### Student Identity and Demographics
+
+- StudentID
+- Student
+- Gender
+- Age
+- GradeLevel
+
+#### Institutional Context
+
+- School
+- Department
+- Region
+
+#### Support and Contextual Indicators
+
+- SocioeconomicStatus
+- ParentalEducation
+- StudyHoursPerWeek
+- Attendance
+- BehaviorScore
+- ExtracurricularScore
+- InternetAccess
+- CareerGoal
+
+This broad data representation helps the project support meaningful filtering and interpretation instead of only displaying basic marks.
+
+## 9. Functional Modules
+
+### 9.1 Dashboard Landing View
+
+The dashboard opens with a project overview area that introduces the system and provides immediate context around the current cohort. It presents important summary information in a visually engaging way and gives users access to the main exploration areas.
+
+### 9.2 Metrics Section
+
+The dashboard provides key metric cards to summarize the dataset and the current analytical view. These metrics help users quickly understand the scale and quality of the student cohort.
+
+Examples of information represented include:
+
+- number of students
+- number of schools
+- number of regions
+- number of academic domains
+- cohort average
+- attendance average
+- number of students requiring support
+
+### 9.3 Filtering and Segmentation
+
+The filtering panel is designed to help users narrow the data based on educational context, learner characteristics, and support signals. This module allows the dashboard to act like a mini analytics studio rather than a static page.
+
+### 9.4 Student Spotlight and Intervention View
+
+This module updates dynamically based on selected students and shows deeper insight into their academic condition. It helps demonstrate how the system can support individual student assessment.
+
+### 9.5 Visualization Studio
+
+This section contains chart-based representations of cohort performance. It helps users identify patterns and compare filtered student groups more effectively than by reading raw table data.
+
+### 9.6 Cohort Directory
+
+The directory view provides a structured table of the active filtered cohort. It acts as a bridge between visual analysis and record-level review.
