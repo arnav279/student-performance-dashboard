@@ -235,3 +235,86 @@
             padding: 10px 14px;
             border-radius: 999px;
             background: rgba(66, 217, 182, 0.14);
+            color: #a2f6e4;
+            font-size: 0.88rem;
+        }
+        .status.risk { background: rgba(255, 132, 120, 0.14); color: #ffb5ad; }
+        .spotlight-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 16px; }
+        .score strong { display: block; margin-top: 8px; font-size: 1.8rem; }
+        .chart { min-height: 340px; margin-top: 18px; }
+        .insight-grid, .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .server-chart { min-height: 320px; }
+        .table-shell {
+            margin-top: 16px;
+            overflow: hidden;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .table-head, .table-row { padding: 14px 16px; }
+        .table-head {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 0.76rem;
+        }
+        .table-row { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+        .tableau-frame {
+            width: 100%;
+            min-height: 520px;
+            border: 0;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-top: 16px;
+        }
+        .mono { font-family: Consolas, "Courier New", monospace; color: #dbe6ff; }
+        @media (max-width: 1200px) {
+            .hero, .workspace, .spotlight { grid-template-columns: 1fr; }
+            .metrics, .spotlight-grid, .insight-grid, .footer-grid, .profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 760px) {
+            .shell { padding: 18px 12px 44px; }
+            .hero, .panel { padding: 18px; border-radius: 22px; }
+            .metrics, .mini-grid, .spotlight-grid, .insight-grid, .footer-grid, .profile-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="hero">
+            <div>
+                <span class="eyebrow">Capstone Intelligence Suite</span>
+                <h1>AI-Powered Student Performance Analysis and Visualization System</h1>
+                <p class="lead">{{ insights.overview }}</p>
+                <div class="hero-actions">
+                    <a class="chip" href="#explorer">Open Cohort Explorer</a>
+                    <a class="chip" href="{{ tableau.data_endpoint }}">Download Tableau Feed</a>
+                </div>
+            </div>
+            <aside class="hero-side">
+                <article class="glass hero-stat">
+                    <span class="muted">Top performer</span>
+                    <strong>{{ insights.top_student.student }}</strong>
+                    <span>{{ "%.2f"|format(insights.top_student.average) }} average score</span>
+                </article>
+                <article class="glass">
+                    <h3>Integrated Stack</h3>
+                    <div class="stack">
+                        <span>Flask</span><span>Plotly</span><span>Tableau</span>
+                        <span>LLM Insights</span><span>Docker</span><span>Kubernetes</span>
+                    </div>
+                </article>
+                <article class="glass">
+                    <h3>Class Snapshot</h3>
+                    <p class="muted" style="margin-top:10px;">Strongest subject: {{ insights.class_snapshot.strongest_subject }}. Intervention focus: {{ insights.class_snapshot.weakest_subject }}.</p>
+                </article>
+            </aside>
+        </section>
+
+        <section class="metrics">
+            {% for metric in metrics %}
+            <article class="panel metric-card">
+                <div class="label">{{ metric.label }}</div>
+                <div class="value">{{ metric.value }}</div>
