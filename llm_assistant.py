@@ -32,3 +32,38 @@ def generate_insights(df):
                 "average": float(row["Average"]),
                 "action": (
                     f"Focus on {weakest_subject_for_student} remediation, reinforce "
+                    f"{row['Department']} learning goals, and schedule weekly mentoring."
+                ),
+            }
+        )
+
+    attendance_alerts = []
+    for _, row in attendance_risk.iterrows():
+        attendance_alerts.append(
+            {
+                "student": row["Student"],
+                "attendance": int(row["Attendance"]),
+                "action": (
+                    f"Schedule a guardian follow-up and attendance review for the "
+                    f"{row['Region']} region cohort."
+                ),
+            }
+        )
+
+    if not recommendations:
+        recommendations.append(
+            {
+                "student": "Classwide",
+                "average": class_average,
+                "action": "Maintain momentum with advanced practice and peer mentoring.",
+            }
+        )
+
+    if not attendance_alerts:
+        attendance_alerts.append(
+            {
+                "student": "Classwide",
+                "attendance": int(attendance_average),
+                "action": "Attendance is stable across the cohort.",
+            }
+        )
