@@ -20,3 +20,13 @@ def test_home_page_renders_dashboard():
     response = client.get("/")
 
     assert response.status_code == 200
+    assert b"AI-Powered Student Performance Analysis and Visualization System" in response.data
+    assert b"Top performer" in response.data
+    assert b"Academic Profile" in response.data
+    assert b"Geography and Demographics" in response.data
+    assert b"Cohort Directory" in response.data
+
+
+def test_insights_api_returns_json():
+    app = create_app()
+    client = app.test_client()

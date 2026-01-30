@@ -10,3 +10,12 @@ spec:
   template:
     metadata:
       labels:
+        app: student-dashboard
+    spec:
+      containers:
+        - name: student-dashboard
+          image: student-dashboard:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          envFrom:
