@@ -16,3 +16,21 @@ def create_subject_chart(df):
     fig.update_layout(template="plotly_white", legend_title_text="Subject", xaxis_title="Student")
     return to_html(fig, full_html=False, include_plotlyjs=False)
 
+
+def create_attendance_chart(df):
+    fig = px.line(
+        df,
+        x="Student",
+        y="Attendance",
+        markers=True,
+        title="Attendance Trend Across the Cohort",
+    )
+    fig.update_traces(line_color="#ff6b6b", marker_color="#00d1ff")
+    fig.update_layout(template="plotly_white", yaxis_range=[0, 100])
+    return to_html(fig, full_html=False, include_plotlyjs=False)
+
+
+def create_performance_scatter(df):
+    fig = px.scatter(
+        df,
+        x="Attendance",

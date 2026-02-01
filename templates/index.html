@@ -318,3 +318,234 @@
             <article class="panel metric-card">
                 <div class="label">{{ metric.label }}</div>
                 <div class="value">{{ metric.value }}</div>
+                <div class="muted">{{ metric.description }}</div>
+            </article>
+            {% endfor %}
+        </section>
+
+        <section class="workspace" id="explorer">
+            <aside class="panel filter-panel">
+                <h2>Cohort Explorer</h2>
+                <p class="muted" style="margin-top:8px;">Filter the cohort by geography, school context, demographics, and learner support signals to update the analysis workspace in real time.</p>
+                <div class="filter-banner">
+                    <strong>Segmentation Filters</strong>
+                    <p class="muted" style="margin-top:8px;">Use multiple learner dimensions together to isolate cohorts for intervention, reporting, and Tableau exports.</p>
+                </div>
+                <div class="controls" style="margin-top:18px;">
+                    <div class="control-group">
+                        <h3>Search and Scope</h3>
+                        <div class="field">
+                            <label for="studentSearch">Student search</label>
+                            <input id="studentSearch" type="text" placeholder="Type a student name">
+                        </div>
+                        <div class="field">
+                            <label for="schoolFilter">School</label>
+                            <select id="schoolFilter">
+                                <option value="All">All schools</option>
+                                {% for school in school_options %}
+                                <option value="{{ school }}">{{ school }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Academic Segments</h3>
+                        <div class="field">
+                            <label for="departmentFilter">Department</label>
+                            <select id="departmentFilter">
+                                <option value="All">All departments</option>
+                                {% for department in department_options %}
+                                <option value="{{ department }}">{{ department }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="gradeFilter">Grade level</label>
+                            <select id="gradeFilter">
+                                <option value="All">All grade levels</option>
+                                {% for grade in grade_options %}
+                                <option value="{{ grade }}">{{ grade }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Geography and Demographics</h3>
+                        <div class="field">
+                            <label for="regionFilter">Region</label>
+                            <select id="regionFilter">
+                                <option value="All">All regions</option>
+                                {% for region in region_options %}
+                                <option value="{{ region }}">{{ region }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="genderFilter">Gender</label>
+                            <select id="genderFilter">
+                                <option value="All">All genders</option>
+                                {% for gender in gender_options %}
+                                <option value="{{ gender }}">{{ gender }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="socioeconomicFilter">Socioeconomic band</label>
+                            <select id="socioeconomicFilter">
+                                <option value="All">All socioeconomic bands</option>
+                                {% for level in socioeconomic_options %}
+                                <option value="{{ level }}">{{ level }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Access and Prioritization</h3>
+                        <div class="field">
+                            <label for="internetFilter">Internet access</label>
+                            <select id="internetFilter">
+                                <option value="All">All access types</option>
+                                {% for item in internet_options %}
+                                <option value="{{ item }}">{{ item }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="sortMode">Sort cohort by</label>
+                            <select id="sortMode">
+                                <option value="average-desc">Highest average</option>
+                                <option value="average-asc">Lowest average</option>
+                                <option value="attendance-desc">Highest attendance</option>
+                                <option value="attendance-asc">Lowest attendance</option>
+                                <option value="name-asc">Student name</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="attendanceThreshold">Minimum attendance threshold</label>
+                            <input id="attendanceThreshold" type="range" min="60" max="100" value="60">
+                            <span class="muted">Current threshold: <strong id="attendanceThresholdValue">60%</strong></span>
+                        </div>
+                        <label class="toggle">
+                            <span>Only show support-risk students</span>
+                            <input id="riskOnly" type="checkbox">
+                        </label>
+                    </div>
+                </div>
+                <div class="mini-grid">
+                    <div class="mini-card"><span class="muted">Visible students</span><strong id="visibleStudentCount">{{ students|length }}</strong></div>
+                    <div class="mini-card"><span class="muted">Filtered avg</span><strong id="filteredAverage">0</strong></div>
+                    <div class="mini-card"><span class="muted">Support cases</span><strong id="filteredSupportCount">0</strong></div>
+                    <div class="mini-card"><span class="muted">Attendance avg</span><strong id="filteredAttendance">0</strong></div>
+                </div>
+                <div class="student-list" id="studentList"></div>
+            </aside>
+
+            <div class="main">
+                <section class="panel">
+                    <div class="spotlight">
+                        <div>
+                            <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start;">
+                                <div>
+                                    <span class="eyebrow">Student Spotlight</span>
+                                    <h2 id="spotlightName" style="margin-top:12px;font-size:2rem;">{{ insights.top_student.student }}</h2>
+                                    <p class="muted" id="spotlightNarrative" style="margin-top:10px;">Click a student from the explorer to open a detailed performance profile and intervention summary.</p>
+                                </div>
+                                <div class="status" id="spotlightStatus">On-track learner</div>
+                            </div>
+                            <div class="spotlight-grid">
+                                <div class="item score"><span class="muted">Average</span><strong id="spotlightAverage">0</strong></div>
+                                <div class="item score"><span class="muted">Attendance</span><strong id="spotlightAttendance">0</strong></div>
+                                <div class="item score"><span class="muted">Best subject</span><strong id="spotlightBest">-</strong></div>
+                                <div class="item score"><span class="muted">Needs support</span><strong id="spotlightWeakest">-</strong></div>
+                            </div>
+                            <div class="chart" id="studentRadar"></div>
+                        </div>
+                        <aside class="item">
+                            <h3>Advisor Brief</h3>
+                            <p class="muted" id="advisorBrief" style="margin-top:12px;">{{ insights.llm_summary }}</p>
+                            <div class="lab-grid" style="margin-top:16px;">
+                                <div class="item"><strong>Intervention Strategy</strong><p class="muted" id="interventionAction" style="margin-top:8px;">Use structured coaching around the weakest subject area.</p></div>
+                                <div class="item"><strong>Attendance Outlook</strong><p class="muted" id="attendanceAction" style="margin-top:8px;">Attendance risk status updates when a student is selected.</p></div>
+                                <div class="item"><strong>Support Priority</strong><p class="muted" id="priorityBand" style="margin-top:8px;">Priority band updates from the selected learner profile.</p></div>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+
+                <section class="insight-grid">
+                    <article class="panel">
+                        <h2>Intervention Matrix</h2>
+                        <p class="muted" style="margin-top:8px;">Attendance and average score reveal which students need both academic and engagement support.</p>
+                        <div class="chart" id="cohortScatter"></div>
+                    </article>
+                    <article class="panel">
+                        <h2>Subject Balance</h2>
+                        <p class="muted" style="margin-top:8px;">The active cohort is recalculated after every filter change for subject-level performance comparison.</p>
+                        <div class="chart" id="cohortSubjects"></div>
+                    </article>
+                </section>
+
+                <section class="insight-grid">
+                    <article class="panel">
+                        <h2>Support Recommendations</h2>
+                        <div class="lab-grid" style="margin-top:18px;">
+                            {% for item in insights.recommendations %}
+                            <div class="item"><strong>{{ item.student }}</strong><p class="muted" style="margin-top:8px;">Average {{ "%.2f"|format(item.average) }}. {{ item.action }}</p></div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                    <article class="panel">
+                        <h2>Attendance Alerts</h2>
+                        <div class="lab-grid" style="margin-top:18px;">
+                            {% for item in insights.attendance_alerts %}
+                            <div class="item"><strong>{{ item.student }}</strong><p class="muted" style="margin-top:8px;">Attendance {{ item.attendance }}%. {{ item.action }}</p></div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </section>
+
+        <section class="profile-grid">
+            {% for profile in dataset_profile %}
+            <article class="panel">
+                <h3>{{ profile.title }}</h3>
+                <p class="muted" style="margin-top:10px;">{{ profile.detail }}</p>
+            </article>
+            {% endfor %}
+        </section>
+
+        <section class="footer-grid" style="margin-top:18px;">
+            <article class="panel">
+                <h2>Visualization Studio</h2>
+                <p class="muted" style="margin-top:8px;">Server-rendered Plotly views complement the live analytics layer, giving the dashboard both presentation polish and exploratory depth.</p>
+                <div class="server-chart">{{ subject_chart|safe }}</div>
+                <div class="server-chart">{{ attendance_chart|safe }}</div>
+                <div class="server-chart">{{ performance_scatter|safe }}</div>
+            </article>
+            <article class="panel">
+                <h2>Cohort Directory</h2>
+                <p class="muted" style="margin-top:8px;">A concise operational view of the currently filtered student population for review and follow-up planning.</p>
+                <div class="table-shell">
+                    <div class="table-head"><span>Student</span><span>Department</span><span>Region</span><span>Average</span><span>Attendance</span></div>
+                    <div id="dataTableBody"></div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        const students = {{ students|tojson }};
+        const q = (id) => document.getElementById(id);
+        const subjectColumns = {{ subject_columns|tojson }};
+        const layoutBase = {
+            paper_bgcolor: "rgba(0,0,0,0)",
+            plot_bgcolor: "rgba(0,0,0,0)",
+            font: { color: "#edf3ff", family: "Segoe UI, sans-serif" },
+            margin: { l: 42, r: 18, t: 30, b: 42 }
+        };
+        let activeStudentName = students[0]?.Student || "";
+
