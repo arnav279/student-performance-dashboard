@@ -30,3 +30,17 @@ def test_home_page_renders_dashboard():
 def test_insights_api_returns_json():
     app = create_app()
     client = app.test_client()
+
+    response = client.get("/api/insights")
+    payload = response.get_json()
+
+    assert response.status_code == 200
+    assert "students" in payload
+    assert "insights" in payload
+    assert payload["insights"]["top_student"]["student"]
+    assert payload["students"][0]["Department"]
+
+
+def test_summary_api_exposes_lab_features_and_metrics():
+    app = create_app()
+    client = app.test_client()

@@ -19,3 +19,16 @@ spec:
           ports:
             - containerPort: 5000
           envFrom:
+            - configMapRef:
+                name: student-dashboard-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15

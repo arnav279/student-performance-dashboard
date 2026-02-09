@@ -5,3 +5,6 @@ metadata:
 spec:
   type: NodePort
   selector:
+    app: student-dashboard
+  ports:
+    - port: 5000
