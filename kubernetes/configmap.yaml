@@ -4,3 +4,4 @@ metadata:
   name: student-dashboard-config
 data:
   FLASK_ENV: production
+  APP_PORT: "5000"

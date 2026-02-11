@@ -32,3 +32,4 @@ spec:
               path: /health
               port: 5000
             initialDelaySeconds: 15
+            periodSeconds: 20

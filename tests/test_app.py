@@ -44,3 +44,14 @@ def test_insights_api_returns_json():
 def test_summary_api_exposes_lab_features_and_metrics():
     app = create_app()
     client = app.test_client()
+
+    response = client.get("/api/summary")
+    payload = response.get_json()
+
+    assert response.status_code == 200
+    assert len(payload["metrics"]) == 6
+    assert len(payload["dataset_profile"]) == 4
+    assert len(payload["lab_features"]) == 6
+    assert payload["lab_features"][4]["title"] == "Intro to LLM"
+    assert len(payload["subject_columns"]) == 5
+    assert payload["tableau"]["data_endpoint"] == "/api/tableau/student-performance.csv"
