@@ -34,3 +34,11 @@ def create_performance_scatter(df):
     fig = px.scatter(
         df,
         x="Attendance",
+        y="Average",
+        text="Student",
+        color="Average",
+        size="ComputerScience",
+        title="Attendance vs Average Score",
+        color_continuous_scale=["#ff6b6b", "#ffd166", "#2df1b8"],
+    )
+    fig.update_traces(textposition="top center")

@@ -549,3 +549,100 @@
         };
         let activeStudentName = students[0]?.Student || "";
 
+        function bestSubject(student) {
+            return ["Math", "Science", "English"].reduce((best, subject) => student[subject] > student[best] ? subject : best, "Math");
+        }
+        function weakestSubject(student) {
+            return ["Math", "Science", "English"].reduce((weakest, subject) => student[subject] < student[weakest] ? subject : weakest, "Math");
+        }
+        function statusOf(student) {
+            if (student.Average < 70 || student.Attendance < 80) return "Priority support";
+            if (student.Average < 80 || student.Attendance < 88) return "Watchlist";
+            return "On-track learner";
+        }
+        function getFilteredStudents() {
+            const search = q("studentSearch").value.trim().toLowerCase();
+            const threshold = Number(q("attendanceThreshold").value);
+            const riskOnly = q("riskOnly").checked;
+            const school = q("schoolFilter").value;
+            const department = q("departmentFilter").value;
+            const grade = q("gradeFilter").value;
+            const region = q("regionFilter").value;
+            const gender = q("genderFilter").value;
+            const socioeconomic = q("socioeconomicFilter").value;
+            const internet = q("internetFilter").value;
+            const items = students.filter((student) => {
+                const matchesSearch = student.Student.toLowerCase().includes(search);
+                const matchesAttendance = Number(student.Attendance) >= threshold;
+                const isRisk = Number(student.Average) < 70 || Number(student.Attendance) < 80;
+                const matchesSchool = school === "All" || student.School === school;
+                const matchesDepartment = department === "All" || student.Department === department;
+                const matchesGrade = grade === "All" || String(student.GradeLevel) === grade;
+                const matchesRegion = region === "All" || student.Region === region;
+                const matchesGender = gender === "All" || student.Gender === gender;
+                const matchesSocioeconomic = socioeconomic === "All" || student.SocioeconomicStatus === socioeconomic;
+                const matchesInternet = internet === "All" || student.InternetAccess === internet;
+                return matchesSearch && matchesAttendance && matchesSchool && matchesDepartment && matchesGrade && matchesRegion && matchesGender && matchesSocioeconomic && matchesInternet && (!riskOnly || isRisk);
+            });
+            items.sort((a, b) => {
+                switch (q("sortMode").value) {
+                    case "average-asc": return a.Average - b.Average;
+                    case "attendance-desc": return b.Attendance - a.Attendance;
+                    case "attendance-asc": return a.Attendance - b.Attendance;
+                    case "name-asc": return a.Student.localeCompare(b.Student);
+                    default: return b.Average - a.Average;
+                }
+            });
+            return items;
+        }
+        function renderSummary(items) {
+            const count = items.length;
+            const avg = count ? (items.reduce((s, item) => s + Number(item.Average), 0) / count).toFixed(1) : "0.0";
+            const att = count ? (items.reduce((s, item) => s + Number(item.Attendance), 0) / count).toFixed(1) : "0.0";
+            const riskCount = items.filter((item) => item.Average < 70 || item.Attendance < 80).length;
+            q("visibleStudentCount").textContent = count;
+            q("filteredAverage").textContent = avg;
+            q("filteredSupportCount").textContent = riskCount;
+            q("filteredAttendance").textContent = `${att}%`;
+        }
+        function renderStudentList(items) {
+            const list = q("studentList");
+            if (!items.length) {
+                list.innerHTML = '<div class="item"><strong>No students match this filter.</strong><p class="muted" style="margin-top:8px;">Lower the attendance threshold or disable support-only mode.</p></div>';
+                return;
+            }
+            if (!items.some((student) => student.Student === activeStudentName)) activeStudentName = items[0].Student;
+            list.innerHTML = items.map((student) => `
+                <button class="student-card ${student.Student === activeStudentName ? "active" : ""}" data-student="${student.Student}">
+                    <div class="student-head">
+                        <div><strong>${student.Student}</strong><div class="muted">${student.Department} • ${student.Region}</div></div>
+                        <div><div class="muted">Average</div><div>${Number(student.Average).toFixed(1)}</div></div>
+                        <div><div class="muted">Attendance</div><div>${student.Attendance}%</div></div>
+                    </div>
+                </button>
+            `).join("");
+            list.querySelectorAll(".student-card").forEach((button) => {
+                button.addEventListener("click", () => {
+                    activeStudentName = button.dataset.student;
+                    renderDashboard();
+                });
+            });
+        }
+        function renderSpotlight(student) {
+            if (!student) return;
+            const status = statusOf(student);
+            q("spotlightName").textContent = student.Student;
+            q("spotlightAverage").textContent = Number(student.Average).toFixed(1);
+            q("spotlightAttendance").textContent = `${student.Attendance}%`;
+            q("spotlightBest").textContent = bestSubject(student);
+            q("spotlightWeakest").textContent = weakestSubject(student);
+            q("spotlightNarrative").textContent = `${student.Student} from ${student.School} (${student.Region}) is a Grade ${student.GradeLevel} learner in ${student.Department}. ${bestSubject(student)} is strongest, while ${weakestSubject(student)} needs the most support.`;
+            q("advisorBrief").textContent = `${student.Student}'s pattern suggests targeted reinforcement in ${weakestSubject(student)}, supported by ${student.StudyHoursPerWeek} study hours per week and a ${student.BehaviorScore} behavior score.`;
+            q("interventionAction").textContent = `Provide structured practice in ${weakestSubject(student)}, align with ${student.CareerGoal} goals, and review progress weekly.`;
+            q("attendanceAction").textContent = student.Attendance < 80 ? "Attendance is below target. Add guardian follow-up and consistency planning." : "Attendance is stable enough for academic acceleration and coaching.";
+            q("priorityBand").textContent = status === "Priority support" ? "High priority. Combine academic intervention with attendance review." : status === "Watchlist" ? "Medium priority. Monitor consistently to prevent decline." : "Low priority. Maintain challenge work and peer mentoring.";
+            const statusNode = q("spotlightStatus");
+            statusNode.textContent = status;
+            statusNode.className = `status${status === "Priority support" ? " risk" : ""}`;
+            Plotly.newPlot("studentRadar", [{
+                type: "scatterpolar",
