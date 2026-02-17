@@ -55,3 +55,14 @@ def test_summary_api_exposes_lab_features_and_metrics():
     assert payload["lab_features"][4]["title"] == "Intro to LLM"
     assert len(payload["subject_columns"]) == 5
     assert payload["tableau"]["data_endpoint"] == "/api/tableau/student-performance.csv"
+
+
+def test_tableau_export_returns_csv():
+    app = create_app()
+    client = app.test_client()
+
+    response = client.get("/api/tableau/student-performance.csv")
+
+    assert response.status_code == 200
+    assert response.mimetype == "text/csv"
+    assert b"SupportFlag" in response.data
