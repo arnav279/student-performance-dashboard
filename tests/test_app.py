@@ -66,3 +66,4 @@ def test_tableau_export_returns_csv():
     assert response.status_code == 200
     assert response.mimetype == "text/csv"
     assert b"SupportFlag" in response.data
+    assert b"AttendanceRisk" in response.data
