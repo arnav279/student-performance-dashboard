@@ -42,3 +42,5 @@ def create_performance_scatter(df):
         color_continuous_scale=["#ff6b6b", "#ffd166", "#2df1b8"],
     )
     fig.update_traces(textposition="top center")
+    fig.update_layout(template="plotly_white", xaxis_range=[60, 100], yaxis_range=[50, 100])
+    return to_html(fig, full_html=False, include_plotlyjs=False)

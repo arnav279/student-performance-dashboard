@@ -646,3 +646,85 @@
             statusNode.className = `status${status === "Priority support" ? " risk" : ""}`;
             Plotly.newPlot("studentRadar", [{
                 type: "scatterpolar",
+                r: [...subjectColumns.map((subject) => student[subject]), student[subjectColumns[0]]],
+                theta: [...subjectColumns, subjectColumns[0]],
+                fill: "toself",
+                line: { color: "#20d9ff", width: 3 },
+                fillcolor: "rgba(32,217,255,0.18)"
+            }], {
+                ...layoutBase,
+                title: { text: "Student Subject Signature", font: { size: 18 } },
+                polar: {
+                    bgcolor: "rgba(0,0,0,0)",
+                    radialaxis: { range: [0, 100], gridcolor: "rgba(170,198,255,0.12)", tickfont: { color: "#99abca" } },
+                    angularaxis: { gridcolor: "rgba(170,198,255,0.12)" }
+                },
+                margin: { l: 24, r: 24, t: 50, b: 18 }
+            }, { responsive: true, displayModeBar: false });
+        }
+        function renderScatter(items) {
+            Plotly.newPlot("cohortScatter", [{
+                x: items.map((student) => student.Attendance),
+                y: items.map((student) => student.Average),
+                text: items.map((student) => student.Student),
+                mode: "markers+text",
+                textposition: "top center",
+                marker: {
+                    size: items.map((student) => Math.max(16, Number(student.Science) / 4)),
+                    color: items.map((student) => student.Average),
+                    colorscale: [[0, "#ff8478"], [0.55, "#ffd166"], [1, "#42d9b6"]],
+                    line: { color: "rgba(255,255,255,0.12)", width: 1 }
+                }
+            }], {
+                ...layoutBase,
+                xaxis: { title: "Attendance %", gridcolor: "rgba(170,198,255,0.08)" },
+                yaxis: { title: "Average Score", range: [50, 100], gridcolor: "rgba(170,198,255,0.08)" }
+            }, { responsive: true, displayModeBar: false });
+        }
+        function renderSubjectBars(items) {
+            const mean = (subject) => items.length ? items.reduce((sum, student) => sum + Number(student[subject]), 0) / items.length : 0;
+            Plotly.newPlot("cohortSubjects", [{
+                type: "bar",
+                x: subjectColumns,
+                y: subjectColumns.map((subject) => mean(subject)),
+                marker: { color: ["#20d9ff", "#1de9b6", "#ffcf4d", "#ff6b81", "#8d7dff"] }
+            }], {
+                ...layoutBase,
+                yaxis: { title: "Average Score", range: [0, 100], gridcolor: "rgba(170,198,255,0.08)" }
+            }, { responsive: true, displayModeBar: false });
+        }
+        function renderTable(items) {
+            q("dataTableBody").innerHTML = items.map((student) => `
+                <div class="table-row">
+                    <div><strong>${student.Student}</strong><div class="muted">${student.School}</div></div>
+                    <div>${student.Department}</div>
+                    <div>${student.Region}</div>
+                    <div>${Number(student.Average).toFixed(1)}</div>
+                    <div>${student.Attendance}%</div>
+                </div>
+            `).join("");
+        }
+        function renderDashboard() {
+            const items = getFilteredStudents();
+            renderSummary(items);
+            renderStudentList(items);
+            renderTable(items);
+            renderScatter(items);
+            renderSubjectBars(items);
+            renderSpotlight(items.find((student) => student.Student === activeStudentName) || items[0]);
+        }
+        ["studentSearch", "schoolFilter", "departmentFilter", "gradeFilter", "regionFilter", "genderFilter", "socioeconomicFilter", "internetFilter", "sortMode", "attendanceThreshold", "riskOnly"].forEach((id) => {
+            q(id).addEventListener("input", () => {
+                q("attendanceThresholdValue").textContent = `${q("attendanceThreshold").value}%`;
+                renderDashboard();
+            });
+            q(id).addEventListener("change", () => {
+                q("attendanceThresholdValue").textContent = `${q("attendanceThreshold").value}%`;
+                renderDashboard();
+            });
+        });
+        q("attendanceThresholdValue").textContent = `${q("attendanceThreshold").value}%`;
+        renderDashboard();
+    </script>
+</body>
+</html>
