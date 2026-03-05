@@ -237,3 +237,168 @@ def build_document():
         ["Region", "Urban or Rural"],
         ["SocioeconomicStatus", "Student socioeconomic category"],
         ["ParentalEducation", "Parent education level"],
+        ["StudyHoursPerWeek", "Weekly study hours"],
+        ["Attendance", "Attendance percentage"],
+        ["Math / Science / English / ComputerScience / Economics", "Assessment scores"],
+        ["BehaviorScore", "Behavioral performance score"],
+        ["ExtracurricularScore", "Participation/activity score"],
+        ["InternetAccess", "Internet access status"],
+        ["CareerGoal", "Student career aspiration"],
+        ["Average", "Calculated overall academic average"],
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("3. PROJECT DESCRIPTION"),
+        subheading("3.1 Database"),
+        paragraph("This project currently uses a CSV file-based dataset instead of a traditional relational database. The main dataset file is dataset/students.csv. Data is loaded using Pandas and processed dynamically inside the Flask application."),
+        subheading("3.2 Table Description"),
+        table(field_rows, widths=[3600, 5400]),
+        subheading("3.3 File/Database Design"),
+        bullet("app.py - Main Flask application"),
+        bullet("llm_assistant.py - AI-style insight generation logic"),
+        bullet("dashboard/visualizations.py - Plotly chart generation functions"),
+        bullet("templates/index.html - Dashboard frontend template"),
+        bullet("dataset/students.csv - Main student dataset"),
+        bullet("tests/test_app.py - Unit tests"),
+        bullet("Dockerfile - Containerization setup"),
+        bullet("docker-compose.yml - Docker compose configuration"),
+        bullet("kubernetes/ - Deployment manifests"),
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("4. INPUT/OUTPUT FORM DESIGN"),
+        paragraph("Input controls include student search, school filter, department filter, grade filter, region filter, gender filter, socioeconomic filter, internet access filter, attendance threshold slider, support-risk toggle, and sorting dropdown."),
+        paragraph("Output is displayed in the form of KPI metric cards, student spotlight panel, advisor brief and intervention recommendations, cohort explorer student list, intervention matrix chart, subject balance chart, server-rendered Plotly visualizations, and cohort directory table."),
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("5. TESTING AND TOOLS USED"),
+        paragraph("Testing covers the following application checks:"),
+        bullet("successful loading of dataset"),
+        bullet("generation of average column"),
+        bullet("uniqueness of student names"),
+        bullet("correct Urban/Rural region setup"),
+        bullet("rendering of dashboard home page"),
+        bullet("API response validation"),
+        bullet("Tableau export route validation"),
+        paragraph("Tools used in the project include:"),
+        bullet("Python"),
+        bullet("Flask"),
+        bullet("Pandas"),
+        bullet("Plotly"),
+        bullet("Pytest"),
+        bullet("Docker and Docker Compose"),
+        bullet("Kubernetes"),
+        bullet("VS Code"),
+        bullet("Git/GitHub"),
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("6. IMPLEMENTATION AND MAINTENANCE"),
+        paragraph("The implementation of the project follows a modular structure. Backend logic is handled using Flask routes, data processing is done through Pandas, charts are built using Plotly, and the frontend is created using HTML, CSS, and JavaScript. Dynamic filtering is implemented on the client side for interactivity."),
+        paragraph("For maintenance, the dataset can be updated by replacing the CSV file, the system supports containerized deployment using Docker, Kubernetes manifests allow future scalable deployment, and test files help ensure correctness after code updates."),
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("7. CONCLUSION AND FUTURE WORK"),
+        paragraph("The project successfully demonstrates a complete student performance analytics system that combines data management, visualization, filtering, and intelligent insight generation. It provides a rich and interactive dashboard for understanding academic trends, attendance behavior, learner support needs, and student segmentation."),
+        paragraph("Future enhancements may include:"),
+        bullet("integration with a relational database such as MySQL or PostgreSQL"),
+        bullet("login and role-based access control"),
+        bullet("downloadable PDF report generation"),
+        bullet("historical trend analysis across semesters"),
+        bullet("real LLM/API integration for advanced recommendations"),
+        bullet("teacher/admin dashboards"),
+        bullet("predictive analytics using machine learning"),
+        bullet("live deployment on cloud platforms"),
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("8. OUTCOME"),
+        paragraph("The project has reached a functional stage with a fully working dashboard, expanded dataset, multi-factor filtering, interactive charts, and deployment-ready configuration."),
+        paragraph("The work demonstrates progress toward a capstone-level educational analytics system with strong visualization and insight-generation capabilities."),
+        paragraph("Further outcomes may include deployment, publication as a technical paper, or extension into a full-scale academic monitoring platform."),
+    ]
+
+    parts += [
+        paragraph(page_break=True),
+        heading("9. BIBLIOGRAPHY"),
+        bullet("[1] Grus, J. (2019). Data Science from Scratch. O'Reilly Media, Sebastopol, Calif."),
+        bullet("[2] McKinney, W. (2022). Python for Data Analysis. O'Reilly Media, Sebastopol, Calif."),
+        bullet("[3] Ramalho, L. (2022). Fluent Python. O'Reilly Media, Sebastopol, Calif."),
+        bullet("[4] Plotly Technologies Inc. (2024). Plotly Python Graphing Library. https://plotly.com/python/"),
+        bullet("[5] Flask Documentation. (2024). Flask Web Development Framework. https://flask.palletsprojects.com/"),
+        bullet("[6] Pandas Documentation. (2024). Pandas User Guide. https://pandas.pydata.org/"),
+        bullet("[7] Docker Documentation. (2024). Docker Overview. https://docs.docker.com/"),
+        bullet("[8] Kubernetes Documentation. (2024). Kubernetes Concepts. https://kubernetes.io/docs/home/"),
+    ]
+
+    body = "".join(parts)
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" '
+        'xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" '
+        'xmlns:o="urn:schemas-microsoft-com:office:office" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" '
+        'xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" '
+        'xmlns:v="urn:schemas-microsoft-com:vml" '
+        'xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" '
+        'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" '
+        'xmlns:w10="urn:schemas-microsoft-com:office:word" '
+        'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
+        'xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" '
+        'xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" '
+        'xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" '
+        'xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" '
+        'xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" '
+        'mc:Ignorable="w14 wp14">'
+        f'<w:body>{body}'
+        '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/>'
+        '<w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" '
+        'w:header="708" w:footer="708" w:gutter="0"/>'
+        '</w:sectPr></w:body></w:document>'
+    )
+
+
+CONTENT_TYPES = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+</Types>
+"""
+
+
+RELS = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+</Relationships>
+"""
+
+
+APP_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+ xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>Microsoft Office Word</Application>
+</Properties>
+"""
+
+
+CORE_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:dcterms="http://purl.org/dc/terms/"
+ xmlns:dcmitype="http://purl.org/dc/dcmitype/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:title>Minor Project Progress Report Styled</dc:title>
+  <dc:creator>OpenAI Codex</dc:creator>

@@ -44,3 +44,62 @@ def build_summary_metrics(df: pd.DataFrame) -> list[dict]:
             "label": "Domains",
             "value": len(SUBJECT_COLUMNS),
             "description": "Academic subject areas used for student assessment.",
+        },
+        {
+            "label": "Cohort Average",
+            "value": f"{df['Average'].mean():.1f}",
+            "description": "Combined performance across five assessment domains.",
+        },
+        {
+            "label": "Attendance",
+            "value": f"{df['Attendance'].mean():.1f}%",
+            "description": "Average attendance rate across the cohort.",
+        },
+        {
+            "label": "Needs Support",
+            "value": int((df["Average"] < 70).sum()),
+            "description": "Students flagged for additional academic intervention.",
+        },
+    ]
+
+
+def build_dataset_profile(df: pd.DataFrame) -> list[dict]:
+    return [
+        {
+            "title": "Academic Profile",
+            "detail": "Math, Science, English, Computer Science, and Economics scores per learner.",
+        },
+        {
+            "title": "Demographic Coverage",
+            "detail": f"{df['Gender'].nunique()} genders, ages {int(df['Age'].min())}-{int(df['Age'].max())}, and {df['GradeLevel'].nunique()} grade levels.",
+        },
+        {
+            "title": "Institutional Context",
+            "detail": f"{df['School'].nunique()} schools, {df['Department'].nunique()} departments, and {df['Region'].nunique()} regions represented.",
+        },
+        {
+            "title": "Learner Support Signals",
+            "detail": "Attendance, study hours, behavior, extracurricular participation, internet access, and parental education.",
+        },
+    ]
+
+
+def get_lab_features() -> list[dict]:
+    return [
+        {
+            "lab": "Lab 1",
+            "title": "Python data loading",
+            "detail": "Reads CSV data with Pandas and prepares clean derived metrics.",
+        },
+        {
+            "lab": "Lab 2",
+            "title": "Data preprocessing",
+            "detail": "Computes multi-subject averages and profile indicators across academic and contextual fields.",
+        },
+        {
+            "lab": "Lab 3",
+            "title": "Web application",
+            "detail": "Serves the dashboard and APIs using Flask routes.",
+        },
+        {
+            "lab": "Lab 4",

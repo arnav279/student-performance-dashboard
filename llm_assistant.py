@@ -67,3 +67,23 @@ def generate_insights(df):
                 "action": "Attendance is stable across the cohort.",
             }
         )
+
+    llm_summary = (
+        "This capstone uses a lightweight LLM-style reasoning layer to turn score and "
+        "attendance patterns, demographic context, and engagement signals into "
+        "human-readable academic support actions."
+    )
+
+    return {
+        "overview": overview,
+        "top_student": {
+            "student": top_student["Student"],
+            "average": float(top_student["Average"]),
+        },
+        "class_snapshot": {
+            "class_average": class_average,
+            "attendance_average": attendance_average,
+            "strongest_subject": strongest_subject,
+            "weakest_subject": weakest_subject,
+        },
+        "llm_summary": llm_summary,
