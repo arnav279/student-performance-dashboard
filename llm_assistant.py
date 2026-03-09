@@ -87,3 +87,11 @@ def generate_insights(df):
             "weakest_subject": weakest_subject,
         },
         "llm_summary": llm_summary,
+        "llm_workflow": [
+            "Load student performance and attendance data.",
+            "Compute averages, identify risks, and rank top performers.",
+            "Convert detected patterns into teacher-friendly interventions.",
+        ],
+        "recommendations": recommendations,
+        "attendance_alerts": attendance_alerts,
+    }

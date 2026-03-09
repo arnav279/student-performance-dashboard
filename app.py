@@ -103,3 +103,31 @@ def get_lab_features() -> list[dict]:
         },
         {
             "lab": "Lab 4",
+            "title": "Data visualization",
+            "detail": "Renders interactive Plotly charts and exposes Tableau-ready analytics data.",
+        },
+        {
+            "lab": "Lab 5",
+            "title": "Intro to LLM",
+            "detail": "Transforms dataset patterns into natural-language academic insights.",
+        },
+        {
+            "lab": "Lab 6",
+            "title": "Containerization and DevOps",
+            "detail": "Packages the app with Docker, Compose, CI, and Kubernetes manifests.",
+        },
+    ]
+
+
+def create_app() -> Flask:
+    app = Flask(__name__)
+    tableau_embed_url = os.environ.get("TABLEAU_EMBED_URL", "").strip()
+
+    @app.route("/")
+    def index():
+        df = load_student_data()
+        insights = generate_insights(df)
+        subject_chart = create_subject_chart(df)
+        attendance_chart = create_attendance_chart(df)
+        performance_scatter = create_performance_scatter(df)
+

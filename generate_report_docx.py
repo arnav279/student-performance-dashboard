@@ -402,3 +402,26 @@ CORE_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <dc:title>Minor Project Progress Report Styled</dc:title>
   <dc:creator>OpenAI Codex</dc:creator>
+  <cp:lastModifiedBy>OpenAI Codex</cp:lastModifiedBy>
+</cp:coreProperties>
+"""
+
+
+WORD_RELS = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>
+"""
+
+
+def main():
+    with ZipFile(OUTPUT_PATH, "w", ZIP_DEFLATED) as docx:
+        docx.writestr("[Content_Types].xml", CONTENT_TYPES)
+        docx.writestr("_rels/.rels", RELS)
+        docx.writestr("docProps/app.xml", APP_XML)
+        docx.writestr("docProps/core.xml", CORE_XML)
+        docx.writestr("word/document.xml", build_document())
+        docx.writestr("word/_rels/document.xml.rels", WORD_RELS)
+    print(OUTPUT_PATH.resolve())
+
+
+if __name__ == "__main__":
+    main()
