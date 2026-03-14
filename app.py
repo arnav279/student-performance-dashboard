@@ -131,3 +131,83 @@ def create_app() -> Flask:
         attendance_chart = create_attendance_chart(df)
         performance_scatter = create_performance_scatter(df)
 
+        return render_template(
+            "index.html",
+            students=df.to_dict(orient="records"),
+            insights=insights,
+            metrics=build_summary_metrics(df),
+            dataset_profile=build_dataset_profile(df),
+            lab_features=get_lab_features(),
+            subject_columns=SUBJECT_COLUMNS,
+            department_options=sorted(df["Department"].unique().tolist()),
+            gender_options=sorted(df["Gender"].unique().tolist()),
+            grade_options=sorted(df["GradeLevel"].astype(str).unique().tolist()),
+            school_options=sorted(df["School"].unique().tolist()),
+            region_options=sorted(df["Region"].unique().tolist()),
+            socioeconomic_options=sorted(df["SocioeconomicStatus"].unique().tolist()),
+            internet_options=sorted(df["InternetAccess"].unique().tolist()),
+            tableau={
+                "enabled": True,
+                "data_endpoint": "/api/tableau/student-performance.csv",
+                "embed_url": tableau_embed_url,
+            },
+            subject_chart=subject_chart,
+            attendance_chart=attendance_chart,
+            performance_scatter=performance_scatter,
+        )
+
+    @app.route("/api/insights")
+    def api_insights():
+        df = load_student_data()
+        return jsonify(
+            {
+                "students": df.to_dict(orient="records"),
+                "insights": generate_insights(df),
+            }
+        )
+
+    @app.route("/api/summary")
+    def api_summary():
+        df = load_student_data()
+        return jsonify(
+            {
+                "metrics": build_summary_metrics(df),
+                "dataset_profile": build_dataset_profile(df),
+                "lab_features": get_lab_features(),
+                "subject_columns": SUBJECT_COLUMNS,
+                "tableau": {
+                    "enabled": True,
+                    "data_endpoint": "/api/tableau/student-performance.csv",
+                    "embed_url": tableau_embed_url,
+                },
+            }
+        )
+
+    @app.route("/api/tableau/student-performance.csv")
+    def api_tableau_data():
+        df = load_student_data().copy()
+        df["SupportFlag"] = df["Average"].apply(lambda value: "Yes" if value < 70 else "No")
+        df["AttendanceRisk"] = df["Attendance"].apply(
+            lambda value: "Yes" if value < 80 else "No"
+        )
+        csv_payload = df.to_csv(index=False)
+        return Response(
+            csv_payload,
+            mimetype="text/csv",
+            headers={
+                "Content-Disposition": "attachment; filename=student-performance-tableau.csv"
+            },
+        )
+
+    @app.route("/health")
+    def health():
+        return jsonify({"status": "ok"})
+
+    return app
+
+
+app = create_app()
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
