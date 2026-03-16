@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <style>
+        :root {
+            --bg: #f5f1e8;
+            --panel: #fffdf8;
+            --ink: #1b2a41;
+            --muted: #51606f;
+            --accent: #114b5f;
+            --accent-soft: #d9ece8;
+            --warn: #c44536;
+            --border: #ddd3c4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top right, rgba(244, 211, 94, 0.35), transparent 24%),
+                linear-gradient(180deg, #efe8da 0%, var(--bg) 100%);
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 32px 20px 48px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(2.1rem, 4vw, 4rem);
+            line-height: 1.05;
+        }
+
+        .hero p {
+            max-width: 720px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .panel {
+            background: rgba(255, 253, 248, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(17, 75, 95, 0.08);
+        }
+
+        .panel h2,
+        .panel h3 {
+            margin-top: 0;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(17, 75, 95, 0.95), rgba(26, 147, 111, 0.92));
+            color: #fff;
+        }
+
+        .metric {
+            font-size: 2rem;
+            margin: 8px 0 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th,
+        td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .alert {
+            border-left: 4px solid var(--warn);
+            padding-left: 12px;
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 20px 14px 32px;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <span class="tag">Capstone Dashboard</span>
+            <h1>AI-Powered Student Performance Analysis and Visualization System</h1>
+            <p>{{ insights.overview }}</p>
+        </section>
+
+        <section class="grid">
+            <article class="panel highlight">
+                <h2>Top Performer</h2>
+                <p>Student</p>
+                <p class="metric">{{ insights.top_student.student }}</p>
+                <p>Average score: {{ "%.2f"|format(insights.top_student.average) }}</p>
+            </article>
+
+            <article class="panel">
+                <h2>Support Recommendations</h2>
+                {% for item in insights.recommendations %}
+                <div class="alert">
+                    <strong>{{ item.student }}</strong>
+                    <p>Average: {{ "%.2f"|format(item.average) }}</p>
+                    <p>{{ item.action }}</p>
+                </div>
+                {% endfor %}
+            </article>
+
+            <article class="panel">
+                <h2>Attendance Alerts</h2>
+                {% for item in insights.attendance_alerts %}
+                <div class="alert">
+                    <strong>{{ item.student }}</strong>
+                    <p>Attendance: {{ item.attendance }}%</p>
+                    <p>{{ item.action }}</p>
+                </div>
+                {% endfor %}
+            </article>
+        </section>
+
+        <section class="panel" style="margin-top: 20px;">
+            <h2>Student Dataset</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Math</th>
+                        <th>Science</th>
+                        <th>English</th>
+                        <th>Attendance</th>
+                        <th>Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.Student }}</td>
+                        <td>{{ student.Math }}</td>
+                        <td>{{ student.Science }}</td>
+                        <td>{{ student.English }}</td>
+                        <td>{{ student.Attendance }}</td>
+                        <td>{{ "%.2f"|format(student.Average) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="grid" style="margin-top: 20px;">
+            <article class="panel">
+                <h2>Subject Comparison</h2>
+                {{ subject_chart|safe }}
+            </article>
+            <article class="panel">
+                <h2>Attendance Trend</h2>
+                {{ attendance_chart|safe }}
+            </article>
+        </section>
+    </main>
+</body>
+</html>

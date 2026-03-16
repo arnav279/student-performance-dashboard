@@ -1,37 +1,60 @@
-import streamlit as st
+from pathlib import Path
+
 import pandas as pd
-import plotly.express as px
+from flask import Flask, jsonify, render_template
 
-st.title("AI-Powered Student Performance Analysis and Visualization System")
+from dashboard.visualizations import create_attendance_chart, create_subject_chart
+from llm_assistant import generate_insights
 
-# Load dataset
-df = pd.read_csv("data/student_data.csv")
 
-# Show dataset
-st.subheader("Student Dataset")
-st.dataframe(df)
+BASE_DIR = Path(__file__).resolve().parent
+DATASET_PATH = BASE_DIR / "dataset" / "students.csv"
 
-# Calculate average
-df["Average"] = df[["Math", "Science", "English"]].mean(axis=1)
 
-# Show averages
-st.subheader("Average Scores")
-st.dataframe(df[["Student", "Average"]])
+def load_student_data() -> pd.DataFrame:
+    df = pd.read_csv(DATASET_PATH)
+    subject_columns = ["Math", "Science", "English"]
+    df["Average"] = df[subject_columns].mean(axis=1).round(2)
+    return df
 
-# Visualization
-st.subheader("Score Comparison")
-fig = px.bar(df, x="Student", y=["Math", "Science", "English"],
-             barmode="group")
-st.plotly_chart(fig)
 
-# AI Insight
-st.subheader("AI Insights")
+def create_app() -> Flask:
+    app = Flask(__name__)
 
-low_students = df[df["Average"] < 70]
+    @app.route("/")
+    def index():
+        df = load_student_data()
+        insights = generate_insights(df)
+        subject_chart = create_subject_chart(df)
+        attendance_chart = create_attendance_chart(df)
 
-if len(low_students) > 0:
-    st.write("Students needing improvement:")
-    st.dataframe(low_students[["Student", "Average"]])
-else:
-    st.write("All students performing well")
+        return render_template(
+            "index.html",
+            students=df.to_dict(orient="records"),
+            insights=insights,
+            subject_chart=subject_chart,
+            attendance_chart=attendance_chart,
+        )
 
+    @app.route("/api/insights")
+    def api_insights():
+        df = load_student_data()
+        return jsonify(
+            {
+                "students": df.to_dict(orient="records"),
+                "insights": generate_insights(df),
+            }
+        )
+
+    @app.route("/health")
+    def health():
+        return jsonify({"status": "ok"})
+
+    return app
+
+
+app = create_app()
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
