@@ -1,5 +1,11 @@
 # Student Performance Dashboard
 
+## Live Website
+
+The project is deployed online and can be accessed here:
+
+[https://student-performance-dashboard-ett-lab.onrender.com/](https://student-performance-dashboard-ett-lab.onrender.com/)
+
 ## 1. Project Title
 
 **AI-Powered Student Performance Assessment and Analytics Dashboard**
