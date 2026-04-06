@@ -360,7 +360,23 @@ If no live provider is configured, the dashboard still works and automatically u
 
 This improves the scope of the project and makes it useful beyond the frontend dashboard alone.
 
-## 14. Why This Project Is Strong as a Minor/Capstone Project
+## 15. CI/CD Setup
+
+The repository now includes a GitHub Actions pipeline in `.github/workflows/ci.yml` with two stages:
+
+- CI: installs dependencies and runs `pytest -q` on pushes and pull requests
+- CD: triggers a Render deployment automatically after CI passes on the `main` branch
+
+To enable automatic deployment from GitHub to Render:
+
+1. Open your Render web service dashboard.
+2. Copy the service deploy hook URL.
+3. In GitHub, go to `Settings > Secrets and variables > Actions`.
+4. Add a repository secret named `RENDER_DEPLOY_HOOK_URL`.
+
+If the secret is not set, the workflow still completes CI successfully and skips deployment instead of failing.
+
+## 16. Why This Project Is Strong as a Minor/Capstone Project
 
 This project is strong for academic submission because it combines multiple meaningful components:
 
@@ -374,7 +390,7 @@ This project is strong for academic submission because it combines multiple mean
 
 It shows both technical effort and analytical thinking. It also demonstrates how software can be used to convert raw educational data into an understandable and useful decision-support system.
 
-## 15. Expected Use Cases
+## 17. Expected Use Cases
 
 The dashboard can be useful in scenarios such as:
 
@@ -386,7 +402,7 @@ The dashboard can be useful in scenarios such as:
 - preparing student analytics presentations
 - demonstrating educational dashboard concepts in academic evaluation
 
-## 16. Outcome of the Project
+## 18. Outcome of the Project
 
 The project delivers a complete interactive student analytics dashboard that combines:
 
@@ -399,7 +415,7 @@ The project delivers a complete interactive student analytics dashboard that com
 
 It successfully presents student performance as a multi-dimensional educational analytics problem rather than a simple marks sheet.
 
-## 17. Future Enhancement Possibilities
+## 19. Future Enhancement Possibilities
 
 The project can be extended further in many directions, including:
 
@@ -415,7 +431,7 @@ The project can be extended further in many directions, including:
 
 These future directions show that the project has good scope for development beyond the current version.
 
-## 18. Final Summary
+## 20. Final Summary
 
 The Student Performance Dashboard is a comprehensive and presentation-oriented educational analytics project that explains student performance through data, interactivity, and visualization. It demonstrates strong project depth through a rich dataset, polished dashboard design, multi-factor filtering, learner-level analysis, and readable support insights.
 
