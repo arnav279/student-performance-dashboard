@@ -4,7 +4,7 @@
 
 The project is deployed online and can be accessed here:
 
-[https://student-performance-dashboard-ett-lab.onrender.com/](https://student-performance-dashboard-ett-lab.onrender.com/)
+[https://student-performance-dashboard-ett-lab.onrender.com/](https://student-performance-dashboard-l02i.onrender.com/)
 
 ## 1. Project Title
 
