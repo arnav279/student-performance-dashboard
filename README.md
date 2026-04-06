@@ -95,6 +95,18 @@ The explorer currently supports filtering by:
 
 This feature makes the dashboard highly interactive and useful for detailed student segmentation.
 
+### 7.1.1 LLM Assistant Integration
+
+The dashboard now includes a real LLM integration layer instead of only static insight text. The assistant can answer questions about the selected student or the full cohort from the dashboard itself.
+
+The integration supports:
+
+- OpenAI-compatible chat completion APIs
+- local Ollama models
+- configurable model, API key, and base URL through environment variables
+- graceful fallback summaries and answers when no live LLM is configured
+- a dedicated `/api/assistant` endpoint for frontend or external use
+
 ### 7.2 Student Spotlight Panel
 
 The student spotlight panel provides a focused view of an individual learner. When a student is selected, the dashboard updates to show:
@@ -311,7 +323,40 @@ Available outputs include:
 
 - insight-oriented API responses
 - summary-oriented API responses
+- LLM assistant question-answer responses
 - Tableau-ready CSV export
+
+## 14. LLM Configuration
+
+### 14.1 OpenAI-Compatible Providers
+
+To enable live cloud LLM responses, set these environment variables before running the app:
+
+- `LLM_API_KEY` for your provider API key
+- `LLM_MODEL` for the chat model name
+- `LLM_API_BASE_URL` optionally, if you are using a non-default OpenAI-compatible endpoint
+
+### 14.2 Local Ollama
+
+To run the dashboard against a local Ollama model, first install Ollama, pull a model, and then set:
+
+- `LLM_PROVIDER=ollama`
+- `LLM_MODEL=llama3.2` or another local model name you have pulled
+- `LLM_API_BASE_URL=http://localhost:11434` optionally, if your Ollama server is not using the default local address
+
+For Ollama, no API key is required. The app uses Ollama's native `/api/chat` endpoint.
+
+Example PowerShell setup:
+
+```powershell
+$env:LLM_PROVIDER="ollama"
+$env:LLM_MODEL="llama3.2"
+ollama serve
+ollama pull llama3.2
+python app.py
+```
+
+If no live provider is configured, the dashboard still works and automatically uses its built-in fallback response engine.
 
 This improves the scope of the project and makes it useful beyond the frontend dashboard alone.
 

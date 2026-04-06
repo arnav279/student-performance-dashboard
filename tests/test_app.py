@@ -1,4 +1,10 @@
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from app import create_app, load_student_data
+from llm_assistant import _default_llm_status
 
 
 def test_load_student_data_creates_average_column():
@@ -25,6 +31,7 @@ def test_home_page_renders_dashboard():
     assert b"Academic Profile" in response.data
     assert b"Geography and Demographics" in response.data
     assert b"Cohort Directory" in response.data
+    assert b"Ask AI Assistant" in response.data
 
 
 def test_insights_api_returns_json():
@@ -38,6 +45,7 @@ def test_insights_api_returns_json():
     assert "students" in payload
     assert "insights" in payload
     assert payload["insights"]["top_student"]["student"]
+    assert payload["insights"]["llm_status"]["mode"] in {"live", "fallback"}
     assert payload["students"][0]["Department"]
 
 
@@ -49,7 +57,7 @@ def test_summary_api_exposes_lab_features_and_metrics():
     payload = response.get_json()
 
     assert response.status_code == 200
-    assert len(payload["metrics"]) == 6
+    assert len(payload["metrics"]) == 7
     assert len(payload["dataset_profile"]) == 4
     assert len(payload["lab_features"]) == 6
     assert payload["lab_features"][4]["title"] == "Intro to LLM"
@@ -67,3 +75,40 @@ def test_tableau_export_returns_csv():
     assert response.mimetype == "text/csv"
     assert b"SupportFlag" in response.data
     assert b"AttendanceRisk" in response.data
+
+
+def test_assistant_api_returns_answer():
+    app = create_app()
+    client = app.test_client()
+
+    response = client.post(
+        "/api/assistant",
+        json={"question": "Who is the top student?", "student": None},
+    )
+    payload = response.get_json()
+
+    assert response.status_code == 200
+    assert "answer" in payload
+    assert payload["llm_status"]["mode"] in {"live", "fallback"}
+
+
+def test_assistant_api_validates_question():
+    app = create_app()
+    client = app.test_client()
+
+    response = client.post("/api/assistant", json={"question": "   "})
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Question is required."
+
+
+def test_ollama_mode_is_considered_live_without_api_key(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "ollama")
+    monkeypatch.setenv("LLM_MODEL", "llama3.2")
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+
+    status = _default_llm_status()
+
+    assert status["enabled"] is True
+    assert status["mode"] == "live"
+    assert status["provider"] == "ollama"

@@ -269,6 +269,46 @@
             margin-top: 16px;
         }
         .mono { font-family: Consolas, "Courier New", monospace; color: #dbe6ff; }
+        .assistant-panel {
+            margin-top: 18px;
+            display: grid;
+            gap: 12px;
+        }
+        .assistant-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .assistant-input {
+            min-height: 108px;
+            resize: vertical;
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(20, 31, 66, 0.98), rgba(11, 18, 40, 0.98));
+            color: #f8fbff;
+            font: inherit;
+        }
+        .assistant-input:focus {
+            outline: 2px solid rgba(32, 217, 255, 0.35);
+            outline-offset: 2px;
+            border-color: rgba(32, 217, 255, 0.5);
+        }
+        .assistant-button {
+            border: 0;
+            cursor: pointer;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #081022;
+            background: linear-gradient(135deg, #20d9ff, #1de9b6);
+            font-weight: 700;
+        }
+        .assistant-button.secondary {
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
         @media (max-width: 1200px) {
             .hero, .workspace, .spotlight { grid-template-columns: 1fr; }
             .metrics, .spotlight-grid, .insight-grid, .footer-grid, .profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -309,6 +349,7 @@
                 <article class="glass">
                     <h3>Class Snapshot</h3>
                     <p class="muted" style="margin-top:10px;">Strongest subject: {{ insights.class_snapshot.strongest_subject }}. Intervention focus: {{ insights.class_snapshot.weakest_subject }}.</p>
+                    <p class="muted" style="margin-top:10px;">LLM mode: <span class="mono">{{ insights.llm_status.mode }}</span>{% if insights.llm_status.model %} using <span class="mono">{{ insights.llm_status.model }}</span>{% endif %}.</p>
                 </article>
             </aside>
         </section>
@@ -471,6 +512,19 @@
                                 <div class="item"><strong>Attendance Outlook</strong><p class="muted" id="attendanceAction" style="margin-top:8px;">Attendance risk status updates when a student is selected.</p></div>
                                 <div class="item"><strong>Support Priority</strong><p class="muted" id="priorityBand" style="margin-top:8px;">Priority band updates from the selected learner profile.</p></div>
                             </div>
+                            <div class="assistant-panel">
+                                <div class="item">
+                                    <strong>Ask AI Assistant</strong>
+                                    <p class="muted" style="margin-top:8px;">Ask about the selected student or the full cohort. If no API key is configured, the dashboard uses a built-in fallback response engine.</p>
+                                    <textarea class="assistant-input" id="assistantQuestion" placeholder="Example: What should we do for this student next week?"></textarea>
+                                    <div class="assistant-actions" style="margin-top:12px;">
+                                        <button class="assistant-button" id="assistantAskButton" type="button">Ask assistant</button>
+                                        <button class="assistant-button secondary" id="assistantCohortButton" type="button">Ask about cohort</button>
+                                    </div>
+                                    <p class="muted" id="assistantStatus" style="margin-top:12px;">Mode: {{ insights.llm_status.mode }}</p>
+                                    <p class="muted" id="assistantAnswer" style="margin-top:10px;">Responses will appear here.</p>
+                                </div>
+                            </div>
                         </aside>
                     </div>
                 </section>
@@ -548,12 +602,13 @@
             margin: { l: 42, r: 18, t: 30, b: 42 }
         };
         let activeStudentName = students[0]?.Student || "";
+        let assistantMode = {{ insights.llm_status.mode|tojson }};
 
         function bestSubject(student) {
-            return ["Math", "Science", "English"].reduce((best, subject) => student[subject] > student[best] ? subject : best, "Math");
+            return subjectColumns.reduce((best, subject) => student[subject] > student[best] ? subject : best, subjectColumns[0]);
         }
         function weakestSubject(student) {
-            return ["Math", "Science", "English"].reduce((weakest, subject) => student[subject] < student[weakest] ? subject : weakest, "Math");
+            return subjectColumns.reduce((weakest, subject) => student[subject] < student[weakest] ? subject : weakest, subjectColumns[0]);
         }
         function statusOf(student) {
             if (student.Average < 70 || student.Attendance < 80) return "Priority support";
@@ -704,6 +759,35 @@
                 </div>
             `).join("");
         }
+        async function askAssistant({ studentScope = true } = {}) {
+            const question = q("assistantQuestion").value.trim();
+            if (!question) {
+                q("assistantAnswer").textContent = "Type a question for the assistant first.";
+                return;
+            }
+            q("assistantStatus").textContent = "Thinking...";
+            q("assistantAnswer").textContent = "Generating a response from the dashboard assistant...";
+            try {
+                const response = await fetch("/api/assistant", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question,
+                        student: studentScope ? activeStudentName : null
+                    })
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload.error || "Assistant request failed.");
+                }
+                assistantMode = payload.llm_status.mode;
+                q("assistantStatus").textContent = `Mode: ${payload.llm_status.mode}${payload.llm_status.model ? ` (${payload.llm_status.model})` : ""}`;
+                q("assistantAnswer").textContent = payload.answer;
+            } catch (err) {
+                q("assistantStatus").textContent = "Assistant unavailable";
+                q("assistantAnswer").textContent = err.message;
+            }
+        }
         function renderDashboard() {
             const items = getFilteredStudents();
             renderSummary(items);
@@ -723,6 +807,8 @@
                 renderDashboard();
             });
         });
+        q("assistantAskButton").addEventListener("click", () => askAssistant({ studentScope: true }));
+        q("assistantCohortButton").addEventListener("click", () => askAssistant({ studentScope: false }));
         q("attendanceThresholdValue").textContent = `${q("attendanceThreshold").value}%`;
         renderDashboard();
     </script>

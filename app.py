@@ -2,14 +2,14 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from flask import Flask, Response, jsonify, render_template
+from flask import Flask, Response, jsonify, render_template, request
 
 from dashboard.visualizations import (
     create_attendance_chart,
     create_performance_scatter,
     create_subject_chart,
 )
-from llm_assistant import generate_insights
+from llm_assistant import answer_question, generate_insights
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -165,6 +165,19 @@ def create_app() -> Flask:
                 "insights": generate_insights(df),
             }
         )
+
+    @app.route("/api/assistant", methods=["POST"])
+    def api_assistant():
+        payload = request.get_json(silent=True) or {}
+        question = str(payload.get("question", "")).strip()
+        student_name = payload.get("student")
+        student_name = str(student_name).strip() if student_name else None
+
+        if not question:
+            return jsonify({"error": "Question is required."}), 400
+
+        df = load_student_data()
+        return jsonify(answer_question(df, question, student_name=student_name))
 
     @app.route("/api/summary")
     def api_summary():
